@@ -65,6 +65,16 @@ int main(int argc, char *argv[]) {
     unknown_fens_vector.push_back(fen);
   };
 
+  // keep a list of known fens to store later
+  std::mutex known_fens_vector_mutex;
+  std::vector<std::pair<std::string, std::pair<int,int>>> known_fens_vector;
+  auto add_known = [&known_fens_vector,
+                    &known_fens_vector_mutex](const std::string &fen, int e, int p) {
+    const std::lock_guard<std::mutex> lock(known_fens_vector_mutex);
+    known_fens_vector.push_back(std::pair<std::string, std::pair<int,int>>(fen, std::pair<int,int>(e, p)));
+  };
+
+
   std::atomic<size_t> known_fens = 0;
   std::atomic<size_t> unknown_fens = 0;
   std::atomic<size_t> scored_moves = 0;
@@ -82,7 +92,7 @@ int main(int argc, char *argv[]) {
   auto t_start = std::chrono::high_resolution_clock::now();
   for (const auto &chunk : fens_chunked)
     pool.enqueue([&handle, &known_fens, &unknown_fens, &scored_moves, &chunk,
-                  &add_unknown]() {
+                  &add_unknown, &add_known]() {
       for (auto &fen : chunk) {
 
         std::vector<std::pair<std::string, int>> result =
@@ -91,9 +101,10 @@ int main(int argc, char *argv[]) {
         size_t n_elements = result.size();
         int ply = result[n_elements - 1].second;
 
-        if (ply > -2)
+        if (ply > -2) {
           known_fens++;
-        else {
+          add_known(fen, result[0].second, ply);
+        } else {
           unknown_fens++;
           add_unknown(fen);
         }
@@ -125,6 +136,21 @@ int main(int argc, char *argv[]) {
   for (auto &fen : unknown_fens_vector)
     ufile << fen << "\n";
   ufile.close();
+  std::ofstream kfile("known.epd");
+  assert(kfile.is_open());
+  for (auto &tuple : known_fens_vector) {
+    kfile << tuple.first << " ; cdb eval: ";
+    int s = tuple.second.first;
+    if (std::abs(s) > 25000)
+      kfile << (s > 0 ? "M" : "-M") << 30000 - std::abs(s);
+    else
+      kfile << s;
+    int ply = tuple.second.second;
+    if (ply >= 0)
+      kfile << ", ply: " << ply;
+    kfile << ";\n";
+  }
+  kfile.close();
 
   // Close DB
   std::cout << "Closing DB" << std::endl;
