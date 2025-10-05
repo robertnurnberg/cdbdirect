@@ -23,15 +23,15 @@ HEADERS = $(LIBHEADER) fen2cdb.h external/threadpool.hpp
 
 # tools
 CXX = g++
-CXXFLAGS = -O3 -g -Wall -Werror -march=native -fno-omit-frame-pointer -fno-inline
+CXXFLAGS = -O3 -g -Wall -march=native -fno-omit-frame-pointer -fno-inline
 CXXFLAGS += -DCHESSDB_PATH=\"$(CHESSDB_PATH)\"
 AR = ar
 ARFLAGS = rcs
 
 # includes and flags to be build the lib
 INCFLAGS = -I$(TERARKDBROOT)/output/include -I$(TERARKDBROOT)/third-party/terark-zip/src -I$(TERARKDBROOT)/include
-LDFLAGS = -L$(TERARKDBROOT)/output/lib
-LIBS = -lterarkdb -lterark-zip-r -lboost_fiber -lboost_context -ltcmalloc -pthread -lgcc -lrt -ldl -ltbb -laio -lgomp -lsnappy -llz4 -lz -lbz2
+LDFLAGS = -L$(TERARKDBROOT)/output/lib -flto=auto
+LIBS = -lterarkdb -lterark-zip-r -lboost_fiber -lboost_context -ltcmalloc -pthread -lgcc -lrt -ldl -ltbb -laio -lgomp -lsnappy -llz4 -lz -lbz2 -latomic
 
 .PHONY = all lib clean format
 

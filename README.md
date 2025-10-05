@@ -66,6 +66,7 @@ a specific file, and writes them to `unknown.epd` :
 ```
 
 sample output:
+
 ```
 Loading: grob_popular_T60t7_cdb.epd
 Opened DB with 44262943988 stored positions.
@@ -103,16 +104,21 @@ make -j
 
 ### A cdb database dump
 
-A suitably prepared dump of the database. 
+A suitably prepared dump of the database.
 
-These dumps are large (>1TB) and will take several hours to download.
+These dumps are large (~1TB, >50B positions) and might take several hours to download.
 
-* The following (and most recent) dump contains 48.5B chess positions:
+* Dumps can be obtained from [Hugging Face](https://huggingface.co/datasets/robertnurnberg/chessdbcn).
+
+```
+hf download --repo-type dataset robertnurnberg/chessdbcn --local-dir . --cache-dir . --include "chess-20250608/**"
+```
+
+* Alternatively, and slower, at the chessdb source:
+
 ```
 wget -c -r -nH --cut-dirs=2 --no-parent --reject="index.html*" -e robots=off ftp://chessdb:chessdb@ftp.chessdb.cn/pub/chessdb/chess-20250608
 ```
-
-* Previous dumps can be obtained from [Hugging Face](https://huggingface.co/datasets/robertnurnberg/chessdbcn).
 
 Note: to be able to handle the database the user should be able to open a
 sufficiently large number of files (more than the typical default of 1024),
@@ -124,7 +130,7 @@ the defaults (e.g. `/etc/security/limits.conf`, `/etc/systemd/system.conf`, and/
 On Ubuntu, install the needed prerequisites:
 
 ```
-sudo apt-get install libgoogle-perftools-dev libtbb-dev libaio-dev liblz4-dev libsnappy-dev zlib1g-dev libbz2-dev libgflags-dev
+sudo apt-get install libboost-fiber-dev libgoogle-perftools-dev libtbb-dev libaio-dev liblz4-dev libsnappy-dev zlib1g-dev libbz2-dev libgflags-dev
 ```
 
 Clone noobpwnftw's terakdb repo and build it
