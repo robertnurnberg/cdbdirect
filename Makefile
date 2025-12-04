@@ -1,13 +1,16 @@
 # Needs to point to the root directory of git tree containing a compiled version of a specific fork of rocksDB (see README.md)
 TERARKDBROOT = /home/vondele/chess/noob/terarkdb
+TERARKDBROOT = ../terarkdb
 
 # Needs to point to the path of the cdb dump
 CHESSDB_PATH = /mnt/ssd/chess-20250608/data
 CHESSDB_PATH = /mnt/ssd/chess-20251115/data
+CHESSDB_PATH = /media/ssd_t7/chessdb/chess-20250608/data
+CHESSDB_PATH = /media/ssd_t7/chessdb/chess-20251115/data
 
 # example executables
 EXE1 = cdbdirect
-EXE2 = cdbdirect_threaded
+EXE2 = litrack.unknown
 EXE3 = cdbdirect_apply
 EXESRC1 = main.cpp
 EXESRC2 = main_threaded.cpp
